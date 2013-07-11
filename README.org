@@ -1,0 +1,51 @@
+* TogglToGCalについて
+  TogglToGCalは，Toggl上にあるタイムエントリをGoogleカレンダーに
+  予定として登録するRubyスクリプトです．
+* 動作環境
+  | Ruby | 1.9.3 |
+  Rubyの他に，google-api-clientが必要です．
+  以下のコマンドを実行して，gemをインストールしてください．
+  #+BEGIN_SRC bash
+$ gem install google-api-client
+  #+END_SRC
+* 準備
+** setting.ymlの設定
+   以下の3つをsetting.ymlに記述してください．
+   + 前回のタイムエントリ取得日(before_date)
+   + TogglのAPIトークン(toggl_api_token)
+   + GoogleカレンダーID(GoogleカレンダーのカレンダーID)
+ここで，前回のタイムエントリ取得日はTogglを利用し始めた日付にしてください．
+** TogglのAPIトークン
+   以下のリンク先の下部にAPIトークンが表示されています．
+   
+   https://www.toggl.com/user/edit
+** GoogleAPIを利用するための手順
+   本TogglToGCalは，GoogleAPIを利用しています．
+   そのため，スクリプトの実行前にGoogleAPIを利用するための準備が必要です．
+
+   1. [[https://code.google.com/apis/console/][GoogleAPIsConsole]] にアクセスし，左メニューのServicesをクリックします．
+   2. Googleの提供しているAPIが一覧で表示されますので，Calender APIのStatusをONに変更してください．
+   3. API Accessをクリックし，installed applicationsに対してClient IDを作成します．(この手順について，4月に行って以来自分ではやり直せず，手順が確認できません．
+   まだGoogleAPIを利用したことがない人はREADMEの加筆にご協力ください．)
+   4. Client IDを作成すると，同時にClient secretが作成され，API Accessのページに表示されるようになります．
+   5. 表示されたClient ID，Client secretを利用して，以下のコマンドを実行します．
+#+BEGIN_SRC bash
+$ google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=CLIENT_ID --client-secret=CLIENT_SECRET
+#+END_SRC
+   6. ブラウザがポップアップし，認証を求められるので，認証をクリックしてください．
+   7. ホームディレクトリに.google-api.yamlが生成されるので，このリポジトリをクローンしたディレクトリにコピーしてください．
+   以上で，GoogleAPIを利用する準備は完了です．
+* 使い方
+  クローンしてきたディレクトリで，以下のコマンドを実行してください．
+#+BEGIN_SRC bash
+$ ruby TogglToGCal.rb
+#+END_SRC
+* 補足
+** 生成されるファイル
+  TogglToGCalを実行すると，time_entrys時刻1-時刻2.txtというファイルが生成されます．
+  このファイルは時刻1から時刻2までのタイムエントリの詳細情報一覧となっています．
+  また，同時にwget-logというファイルが生成されます．
+  これらファイルをTogglToGCalは参照していないので，不要だと感じた場合は適宜削除していただいてかまいません．
+** 前回のタイムエントリ取得日(before_date)について
+   前回のタイムエントリ取得日は，TogglToGCalによって自動で更新されます．
+   setting.ymlのこの値を変更してしまうと，重複してGoogleカレンダーに予定が登録される可能性がありますので，注意してください．
