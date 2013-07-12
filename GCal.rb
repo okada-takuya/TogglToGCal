@@ -49,12 +49,12 @@ class GCal
 
   private
   def change_date_format_for_time_entry(date)
-    /(\d\d\d\d-\d\d-\d\d\T\d\d:\d\d:\d\d)([+-]\d\d:\d\d)/  =~ date
+    /(\d{4}-\d{2}-\d{2}\T\d{2}:\d{2}:\d{2})([+-]\d{2}:\d{2})/  =~ date
     return $1 + ".000" + $2
   end
 
   def change_date_format_for_time(time)
-    /(\d\d\d\d-\d\d-\d\d)\s(\d\d:\d\d:\d\d)\s([+-]\d\d)(\d\d)/ =~ time
+    /(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2})\s([+-]\d{2})(\d{2})/ =~ time
     return $1 + "T" + $2 + ".000" + $3 + ":" + $4
   end
   
