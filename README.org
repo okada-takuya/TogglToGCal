@@ -1,6 +1,6 @@
 * TogglToGCalについて
   TogglToGCalは，Toggl上にあるタイムエントリをGoogleカレンダーに
-  予定として登録するRubyスクリプトです．
+  イベントとして登録するRubyスクリプトです．
 * 動作環境
   | Ruby | 1.9.3 |
   Rubyの他に，google-api-clientが必要です．
@@ -20,15 +20,32 @@ $ gem install google-api-client
    
    https://www.toggl.com/user/edit
 ** GoogleAPIを利用するための手順
+*** 初めてGoogleAPIを利用する場合
    本TogglToGCalは，GoogleAPIを利用しています．
    そのため，スクリプトの実行前にGoogleAPIを利用するための準備が必要です．
 
-   1. [[https://code.google.com/apis/console/][GoogleAPIsConsole]] にアクセスし，左メニューのServicesをクリックします．
+   1. [[https://code.google.com/apis/console/][GoogleAPIsConsole]] にアクセスし，Create Projectをクリックします．
    2. Googleの提供しているAPIが一覧で表示されますので，Calender APIのStatusをONに変更してください．
-   3. API Accessをクリックし，installed applicationsに対してClient IDを作成します．(この手順について，4月に行って以来自分ではやり直せず，手順が確認できません．
-   まだGoogleAPIを利用したことがない人はREADMEの加筆にご協力ください．)
-   4. Client IDを作成すると，同時にClient secretが作成され，API Accessのページに表示されるようになります．
-   5. 表示されたClient ID，Client secretを利用して，以下のコマンドを実行します．
+   3. GoogleAPIs，CalenderAPIのそれぞれについてAcceptをクリックしてください．
+   4. 左メニューのAPI Accessをクリックし，Create OAuth 2.0 client ID... をクリックしてください．
+   5. Project nameにTogglToGCalと入力してNextをクリックしてください．
+   6. ラジオボタンにて，Installed application，Otherを選択し，Create client IDをクリックしてください．
+   7. Client ID for installed applications以下にClient ID，Client secretが表示されます．
+
+*** 以前にGoogleAPIを利用したことがある場合
+   1. [[https://code.google.com/apis/console/][GoogleAPIsConsole]] にアクセスし，左メニュー中のプルダウンメニューをクリックします．(名前は人によって違います)
+   2. Createをクリックします．
+   3. TogglToGCalと入力してCreate projectをクリックします．
+   4. Googleの提供しているAPIが一覧で表示されますので，Calender APIのStatusをONに変更してください．
+   5. GoogleAPIs，CalenderAPIのそれぞれについてAcceptをクリックしてください．
+   6. 左メニューのAPI Accessをクリックし，Create OAuth 2.0 client ID... をクリックしてください．
+   7. Project nameにTogglToGCalと入力してNextをクリックしてください．
+   8. ラジオボタンにて，Installed application，Otherを選択し，Create client IDをクリックしてください．
+   9. Client ID for installed applications以下にClient ID，Client secretが表示されます．
+
+*** 共通の手順
+   表示されたClient ID，Client secretを利用して，以下のコマンドを実行します．
+
 #+BEGIN_SRC bash
 $ google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=CLIENT_ID --client-secret=CLIENT_SECRET
 #+END_SRC
@@ -48,4 +65,11 @@ $ ruby TogglToGCal.rb
   これらファイルをTogglToGCalは参照していないので，不要だと感じた場合は適宜削除していただいてかまいません．
 ** 前回のタイムエントリ取得日(before_date)について
    前回のタイムエントリ取得日は，TogglToGCalによって自動で更新されます．
-   setting.ymlのこの値を変更してしまうと，重複してGoogleカレンダーに予定が登録される可能性がありますので，注意してください．
+   setting.ymlのこの値を変更してしまうと，重複してGoogleカレンダーにイベントが登録される可能性がありますので，注意してください．
+
+** タイムトラッキングツール中のイベントの生成について
+   Togglでトラッキングを行っている最中にTogglToGCalを実行すると，トラッキングを
+   行っている最中のタイムエントリは現在時刻までのイベントとして登録されます．
+   次回TogglToGCal使用時には前回のタイムエントリ取得時に現在時刻までのイベントとして登録された
+   タイムエントリの残った時間は，タイムエントリとして登録されません．
+   トラッキング中は，出来る限りTogglToGCalを実行しないことをおすすめします．
